@@ -3,7 +3,15 @@
 set -e
 
 CONFIG_DIR=$PWD/volumes/config-init/db
-HOST_IP=$(ip route get 1 | awk '{print $NF;exit}')
+OS=$(uname -s)
+if [[ $OS = "Linux" ]]; then
+    HOST_IP=$(ip route get 1 | awk '{print $7; exit}')
+elif [[ $OS = "Darwin" ]]; then
+    HOST_IP=$(ifconfig | grep -B2 '1000baseT' | awk '{print $2; exit}')
+else
+    echo "Unknown OS"
+    exit 0
+fi
 GLUU_VERSION=3.1.2_dev
 INIT_CONFIG_CMD=""
 
